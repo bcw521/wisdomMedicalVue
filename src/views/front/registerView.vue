@@ -12,7 +12,7 @@
           2、网上挂号实行实名注册，用户必须成为网站的注册会员方可使用网上挂号功能。<br>
           3、预约后请于一个工作日后（24小时）在挂号查询界面查询挂号是否通过审核，通过审核为ture,未通过审核为false<br>
           <div>
-            <el-steps direction="vertical" :active="active" space="100px">
+            <el-steps direction="vertical" :active="active" space="100px" finish-status="success">
               <el-step title="病员网上注册"></el-step>
               <el-step title="选择相应科室和专家"></el-step>
               <el-step title="进行网上挂号"></el-step>
@@ -31,10 +31,10 @@
               <el-input v-model="form.name"></el-input>
             </el-form-item>
             <el-form-item label="密码" prop="password">
-              <el-input v-model="form.password" maxlength="18"></el-input>
+              <el-input v-model="form.password" maxlength="18" show-password></el-input>
             </el-form-item>
-            <el-form-item label="身份证号" prop="CardID">
-              <el-input v-model="form.CardID"></el-input>
+            <el-form-item label="身份证号" prop="card">
+              <el-input v-model="form.card"></el-input>
             </el-form-item>
             <el-form-item label="性别" prop="sex">
               <el-radio v-model="form.sex" label="男">男</el-radio>
@@ -57,12 +57,49 @@
           </el-form>
         </div>
       </el-card>
+      <el-card class="wsgh" style="display: none">
+        <div slot="header" class="clearfix">
+          <span>|&nbsp;&nbsp;网上挂号</span>
+        </div>
+        <div>
+          <el-button @click="chinese">中医门诊</el-button>
+          <el-button @click="foregin">西医门诊</el-button>
+        </div>
+      </el-card>
+      <el-card class="wsgh_ch" style="display: none">
+        <div slot="header" class="clearfix">
+          <span>|&nbsp;&nbsp;网上挂号</span>
+        </div>
+        <div>
+          <el-button @click="wsgh_1">中医外科</el-button>
+          <el-button @click="wsgh_2">中医内科</el-button>
+        </div>
+      </el-card>
+      <el-card class="wsgh_fo" style="display: none">
+        <div slot="header" class="clearfix">
+          <span>|&nbsp;&nbsp;网上挂号</span>
+        </div>
+        <div>
+          <el-button @click="wsgh_5">发热门诊</el-button>
+          <el-button @click="wsgh_8">心理咨询</el-button>
+          <el-button @click="wsgh_3">儿科</el-button>
+          <el-button @click="wsgh_4">妇产科</el-button>
+          <el-button @click="wsgh_6">男科</el-button>
+          <el-button @click="wsgh_7">眼科</el-button>
+          <br>
+          <el-button class="mt10" @click="wsgh_11">神经外科</el-button>
+          <el-button class="mt10" @click="wsgh_12">血液门诊</el-button>
+          <el-button class="mt10" @click="wsgh_9">骨科</el-button>
+          <el-button class="mt10" @click="wsgh_10">肛肠科</el-button>
+        </div>
+      </el-card>
   </div>
   </div>
 </template>
 
 <script>
 import Layout from "@/components/Layout";
+import {insert} from "@/api";
 export default {
   name: "registerView",
   components: {
@@ -86,7 +123,6 @@ export default {
         if (value===''){
           callback(new Error('请输入电话号码'));
         }else {
-          //密码要求含数字 字母和下划线
           let pattern=/^[1][3|4|5|6|7|8|9]\d{9}$/;
           if(!pattern.test(value)){
             callback(new Error('请输入正确的号码'));
@@ -100,7 +136,7 @@ export default {
       form: {
         name: '',
         password:'',
-        CardID:'',
+        card:'',
         sex:'',
         phone:'',
         address:'',
@@ -114,9 +150,9 @@ export default {
         password: [
           {validator:checkPassword,trigger: 'blur'}
         ],
-        CardID: [
+        card: [
           { required: true, message: '请输入身份证', trigger: 'blur' },
-          {min:18,max: 19,  message: '请您认真填写您的身份证', trigger: 'blur' }
+          {min:15,max:18,message: '请您认真填写您的身份证', trigger: 'blur' }
         ],
         phone: [
           {validator:checkPhone,trigger:'blur'}
@@ -129,25 +165,161 @@ export default {
         ]
       }
       }
-    },methods:{
-    next(){
+    },methods: {
+    next() {
       this.active++;
-      if (this.active===3){
-        this.active=0;
+      if (this.active === 3) {
+        this.active = 0;
       }
     },
-    onSubmit(formName) {
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-            alert('submit!');
-            console.log(this.form);
-          } else {
-            console.log('error submit!!');
-            return false;
+    chinese() {
+      let wsgh = document.querySelector('.wsgh');
+      wsgh.style.display = 'none';
+      let wsgh_ch = document.querySelector('.wsgh_ch');
+      wsgh_ch.style.display = 'block';
+    },
+    foregin() {
+      let wsgh = document.querySelector('.wsgh');
+      wsgh.style.display = 'none';
+      let wsgh_fo = document.querySelector('.wsgh_fo');
+      wsgh_fo.style.display = 'block';
+    },
+    wsgh_1(){
+      this.$router.push(
+          {
+            name:'frontWsgh',
+            query:{
+              id:1
+            }
           }
-        });
-      }
+      )
+    },
+    wsgh_2(){
+      this.$router.push(
+          {
+            name:'frontWsgh',
+            query:{
+              id:2
+            }
+          }
+      )
+    },
+    wsgh_3(){
+      this.$router.push(
+          {
+            name:'frontWsgh',
+            query:{
+              id:3
+            }
+          }
+      )
+    },
+    wsgh_4(){
+      this.$router.push(
+          {
+            name:'frontWsgh',
+            query:{
+              id:4
+            }
+          }
+      )
+    },
+    wsgh_5(){
+      this.$router.push(
+          {
+            name:'frontWsgh',
+            query:{
+              id:5
+            }
+          }
+      )
+    },
+    wsgh_6(){
+      this.$router.push(
+          {
+            name:'frontWsgh',
+            query:{
+              id:6
+            }
+          }
+      )
+    },
+    wsgh_7(){
+      this.$router.push(
+          {
+            name:'frontWsgh',
+            query:{
+              id:7
+            }
+          }
+      )
+    },
+    wsgh_8(){
+      this.$router.push(
+          {
+            name:'frontWsgh',
+            query:{
+              id:8
+            }
+          }
+      )
+    },
+    wsgh_9(){
+      this.$router.push(
+          {
+            name:'frontWsgh',
+            query:{
+              id:9
+            }
+          }
+      )
+    },
+    wsgh_10(){
+      this.$router.push(
+          {
+            name:'frontWsgh',
+            query:{
+              id:10
+            }
+          }
+      )
+    },
+    wsgh_11(){
+      this.$router.push(
+          {
+            name:'frontWsgh',
+            query:{
+              id:11
+            }
+          }
+      )
+    },
+    wsgh_12(){
+      this.$router.push(
+          {
+            name:'frontWsgh',
+            query:{
+              id:12
+            }
+          }
+      )
+    },
+    onSubmit(formName) {
+      this.$refs[formName].validate(async (valid) => {
+        if (valid) {
+          const insertRes = await insert(this.form);
+          if (insertRes.data.code === "200") {
+            this.$message.success("注册成功!");
+            this.form = {};
+          } else {
+            this.$message.error("注册失败");
+          }
+        } else {
+          return false;
+        }
+      });
     }
+  }
 }
 </script>
 
@@ -158,5 +330,8 @@ export default {
   position: absolute;
   top: 170px;
   right: 380px;
+}
+.mt10{
+  margin-top: 10px;
 }
 </style>

@@ -1,3 +1,9 @@
 import request from "@/utils/request";
 
-request
+export const deleteAPI=(id)=>request(
+    '/user/'+id,
+    {
+        method:'delete',
+    }
+)
+

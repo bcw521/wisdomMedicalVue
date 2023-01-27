@@ -26,24 +26,20 @@
             <span><i class="el-icon-s-home"></i></span>
             首页
           </el-menu-item>
-          <el-submenu index="">
+          <el-submenu>
             <template slot="title">病员管理</template>
-            <el-menu-item index="/adduser">
-              <span><i class="el-icon-tickets"></i></span>
-              添加病员
-            </el-menu-item>
-            <el-menu-item index="/doctor/layout">
+            <el-menu-item index="/doctor/patient">
               <span><i class="el-icon-tickets"></i></span>
               病员列表
             </el-menu-item>
           </el-submenu>
-          <el-submenu index="">
+          <el-submenu>
             <template slot="title">病历管理</template>
-            <el-menu-item index="/adduser">
+            <el-menu-item index="/doctor/inrecord">
               <span><i class="el-icon-tickets"></i></span>
               添加病历
             </el-menu-item>
-            <el-menu-item index="/adduser">
+            <el-menu-item index="">
               <span><i class="el-icon-tickets"></i></span>
               修改病历
             </el-menu-item>
@@ -56,116 +52,44 @@
       </div>
       <div style="flex: 1">
         <el-card class="box-card">
-          <div slot="header" class="clearfix">
-            医生信息
-          </div>
           <div>
-            <el-descriptions>
-              <el-descriptions-item label="用户名">{{username}}</el-descriptions-item>
-              <el-descriptions-item label="手机号">{{phone}}</el-descriptions-item>
-              <el-descriptions-item label="所在部门">{{office_name}}</el-descriptions-item>
-              <el-descriptions-item label="备注">
-                <el-tag size="small">专家</el-tag>
-              </el-descriptions-item>
-              <el-descriptions-item label="账号">{{account}}</el-descriptions-item>
-            </el-descriptions>
+            <el-table
+                :data="tableData"
+                border stripe
+                style="width: 100%;margin: 20px auto">
+              <el-table-column
+                  prop="name"
+                  label="挂号人姓名"
+                 >
+              </el-table-column>
+              <el-table-column
+                  prop="sex"
+                  label="挂号人性别"
+                  >
+              </el-table-column>
+              <el-table-column
+                  prop="book_time"
+                  label="挂号时间"
+                  >
+              </el-table-column>
+            </el-table>
           </div>
-          <el-button @click="dialogFormVisible = true" type="text">修改个人信息</el-button>
         </el-card>
-        <el-dialog title="修改信息" :visible.sync="dialogFormVisible">
-          <el-form :model="form">
-            <el-form-item label="账号" :label-width="formLabelWidth">
-              <el-input v-model="form.account" autocomplete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="电话号码" :label-width="formLabelWidth">
-              <el-input v-model="form.phone" autocomplete="off"></el-input>
-            </el-form-item>
-          </el-form>
-          <div slot="footer" class="dialog-footer">
-            <el-button @click="dialogFormVisible = false">取 消</el-button>
-            <el-button type="primary" @click="updatedoctor">确 定</el-button>
-          </div>
-        </el-dialog>
-        <el-button @click="editpwdVisible=true" type="text">修改密码</el-button>
-        <el-dialog title="修改密码" :visible.sync="editpwdVisible">
-          <el-form :model="ruleForm" :rules="rules" ref="ruleForm">
-            <el-form-item label="原始密码" :label-width="formLabelWidth" prop="password">
-              <el-input v-model="ruleForm.password" autocomplete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="新密码" :label-width="formLabelWidth" prop="pass">
-              <el-input v-model="ruleForm.pass" autocomplete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="确认密码" :label-width="formLabelWidth"  prop="checkPass">
-              <el-input v-model="ruleForm.checkPass" autocomplete="off"></el-input>
-            </el-form-item>
-          </el-form>
-          <div slot="footer" class="dialog-footer">
-            <el-button @click="dialogFormVisible = false">取 消</el-button>
-            <el-button type="primary" @click="submitForm('ruleForm')">确 定</el-button>
-          </div>
-        </el-dialog>
-      </div>
+    </div>
     </div>
   </div>
 </template>
 
 <script>
 import screenfull from "screenfull";
-import {doctorInfo, doctorupinfo, doctorupppwd} from "@/api";
-import Cookies from 'js-cookie'
-import {updatadoctorpwd} from "@/api/update";
+import {doctorInfo, doctorupinfo, doctorupppwd, page, selectAppointmentD} from "@/api";
 export default {
   name: "DoctorInfoView",
   data() {
-    var validatePass = (rule, value, callback) => {
-      if (value === '') {
-        callback(new Error('请输入密码'));
-      } else {
-        if (this.ruleForm.checkPass !== '') {
-          this.$refs.ruleForm.validateField('checkPass');
-        }
-        callback();
-      }
-    };
-    var validatePass2 = (rule, value, callback) => {
-      if (value === '') {
-        callback(new Error('请再次输入密码'));
-      } else if (value !== this.ruleForm.pass) {
-        callback(new Error('两次输入密码不一致!'));
-      } else {
-        callback();
-      }
-    };
     return {
-      account:'',
-      office_name:'',
-      phone:'',
-      form: {
-        id:localStorage.getItem("id"),
-        account:localStorage.getItem("account"),
-        phone:localStorage.getItem("phone")
-      },
-      dialogFormVisible:false,
-      editpwdVisible:false,
-      formLabelWidth: '120px',
+      tableData:[],
       username:localStorage.getItem("name"),
-      ruleForm: {
-        password:'',
-        pass: '',
-        checkPass: '',
-        id:localStorage.getItem("id"),
-      },
-      rules: {
-        password: [
-          { required: true, message: '请输入原始密码', trigger: 'blur' }],
-        pass: [
-          {validator: validatePass, trigger: 'blur'}
-        ],
-        checkPass: [
-          {validator: validatePass2, trigger: 'blur'}
-        ],
       }
-    };
   },
   created() {
     this.account=localStorage.getItem("account");
@@ -178,6 +102,7 @@ export default {
           localStorage.setItem("phone",this.phone);
         }
     )
+    this.query();
   },
   methods: {
     fullScreen() {
@@ -216,6 +141,16 @@ export default {
             console.log(res.data);
           }
       )
+    },
+    query(){
+      selectAppointmentD(this.username).then(
+          res=>{
+            this.total=res.data.data.length;
+            console.log(res.data.data);
+            this.total=res.data.data.length;
+            this.tableData=res.data.data;
+          }
+      );
     }
   }
 }

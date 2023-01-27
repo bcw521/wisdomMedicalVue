@@ -21,12 +21,12 @@
           </tr>
           <tr>
             <td style="padding-top: 40px">
-              <el-button style="width: 200px;height: 60px;" type="warning" icon="el-icon-edit">网上挂号</el-button>
+              <el-button style="width: 200px;height: 60px;" type="warning" icon="el-icon-edit" @click="Experts">网上挂号</el-button>
             </td>
           </tr>
           <tr>
             <td style="padding-top: 40px">
-              <el-button style="width: 200px;height: 60px;" type="primary" icon="el-icon-search">挂号查询</el-button>
+              <el-button style="width: 200px;height: 60px;" type="primary" icon="el-icon-search" @click="$router.push('/front/ghcx')">挂号查询</el-button>
             </td>
           </tr>
         </table>
@@ -51,10 +51,28 @@ export default {
       byzc.style.display='none';
     },
     sick_register(){
+      let byzc=document.querySelector('.byzc');
+      byzc.style.display='block';
+      let ghxz=document.querySelector('.ghxz');
+      ghxz.style.display='none';
+      let wsgh=document.querySelector('.wsgh');
+      wsgh.style.display='none';
+      let wsgh_ch=document.querySelector('.wsgh_ch');
+      wsgh_ch.style.display='none';
+      let wsgh_fo=document.querySelector('.wsgh_fo');
+      wsgh_fo.style.display='none';
+    },
+    Experts(){
+      let wsgh=document.querySelector('.wsgh');
+      wsgh.style.display='block';
+      let wsgh_ch=document.querySelector('.wsgh_ch');
+      wsgh_ch.style.display='none';
+      let wsgh_fo=document.querySelector('.wsgh_fo');
+      wsgh_fo.style.display='none';
       let ghxz=document.querySelector('.ghxz');
       ghxz.style.display='none';
       let byzc=document.querySelector('.byzc');
-      byzc.style.display='block';
+      byzc.style.display='none';
     }
   }
 }
